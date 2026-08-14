@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>YY Mobile 應屆考生專區</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              yellow: '#f9ed32',
+              green: '#5cc5c1',
+              teal: '#12c1c3',
+              border: '#e1e0d7',
+              grey: '#e1e0d7',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans TC"', '"Noto Sans HK"', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --app-max-width: 100%;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (min-width: 431px) { :root { --app-max-width: 430px; } }
+    html, body {
+      height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans HK', sans-serif;
+      width: 100%;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .page-shell {
+      width: 100%;
+      max-width: var(--app-max-width);
+      margin-inline: auto;
+      position: relative;
+    }
+    .ink-bg-top::before,
+    .ink-bg-bottom::after {
+      content: '';
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+      mix-blend-mode: multiply;
+    }
+    .ink-bg-top::before {
+      top: 180px;
+      right: max(-40px, -10vw);
+      width: min(78vw, 323px);
+      height: min(50vw, 208px);
+      background: url('images/watercolor.png') no-repeat center / contain;
+    }
+    .ink-bg-bottom::after {
+      bottom: 80px;
+      left: max(-20px, -5vw);
+      width: min(33vw, 136px);
+      height: min(51vw, 211px);
+      background: url('images/watercolor.png') no-repeat center / contain;
+      transform: scaleX(-1);
+    }
+    .ink-graphic-deco {
+      position: fixed;
+      bottom: 0;
+      right: max(-20px, -5vw);
+      width: min(89vw, 368px);
+      height: min(52vw, 215px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      background: url('images/ink-graphic.png') no-repeat center / contain;
+    }
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .section-divider__line {
+      flex: 1;
+      height: 2px;
+      border-radius: 20px;
+      background: #5cc5c1;
+    }
+    .section-divider__center {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0 4px;
+      font-weight: 900;
+      color: #5cc5c1;
+      letter-spacing: 0.15em;
+      white-space: nowrap;
+      text-shadow:
+        -2px -2px 0 #fff, 2px -2px 0 #fff,
+        -2px 2px 0 #fff, 2px 2px 0 #fff,
+        0 0 8px #fff;
+    }
+    .section-divider__icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 29px;
+      height: auto;
+      pointer-events: none;
+    }
+    .quote-card {
+      position: relative;
+      height: 171px;
+      margin-bottom: 1.25rem;
+    }
+    .quote-card__bg {
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 100%;
+      height: 150px;
+      border-radius: 20px;
+      background: #f9ed32;
+    }
+    .quote-card__header {
+      position: absolute;
+      left: 12px;
+      top: -6px;
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+      gap: 61px;
+    }
+    .quote-card__mark {
+      width: 39px;
+      height: 33px;
+      flex-shrink: 0;
+    }
+    .quote-card__title-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .quote-card__title-text {
+      font-weight: 900;
+      color: #5cc5c1;
+      letter-spacing: 0.15em;
+      white-space: nowrap;
+      text-shadow:
+        -2px -2px 0 #fff, 2px -2px 0 #fff,
+        -2px 2px 0 #fff, 2px 2px 0 #fff,
+        0 0 8px #fff;
+    }
+    .quote-card__logo-cluster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 45px;
+      flex-shrink: 0;
+    }
+    .quote-card__logo-icons {
+      display: flex;
+      align-items: flex-end;
+      margin-right: -4.5px;
+    }
+    .quote-card__logo-icons img:nth-child(1) {
+      width: 26px;
+      height: 31px;
+      margin-right: -4.5px;
+    }
+    .quote-card__logo-icons img:nth-child(2) {
+      width: 21px;
+      height: 31px;
+      margin-right: -4.5px;
+    }
+    .quote-card__logo-icons img:nth-child(3) {
+      width: 7px;
+      height: 6px;
+      padding: 2px 0;
+    }
+    .quote-card__logo-tagline {
+      width: 30px;
+      height: 6px;
+      margin-top: 1px;
+    }
+    .quote-card__share {
+      position: absolute;
+      right: 12px;
+      top: 20px;
+      z-index: 2;
+      display: flex;
+      height: 38px;
+      width: 38px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid #5cc5c1;
+      color: #5cc5c1;
+      opacity: 0.75;
+      background: transparent;
+    }
+    .quote-card__text {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + 9px);
+      z-index: 1;
+      width: min(280px, calc(100% - 32px));
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 32px;
+      letter-spacing: 0.08em;
+      color: #000;
+    }
+    .quote-card__signature {
+      position: absolute;
+      right: 12px;
+      top: 109px;
+      z-index: 2;
+      width: 43px;
+      height: 50px;
+      object-fit: contain;
+      opacity: 0.75;
+    }
+    .resource-row + .resource-row {
+      border-top: 1px solid #e1e0d7;
+    }
+    .resource-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px 10px;
+    }
+    .resource-control-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      border: 1.5px solid #5cc5c1;
+      color: #5cc5c1;
+      background: #fff;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .resource-control-btn--active {
+      background: #5cc5c1;
+      color: #fff;
+    }
+    .resource-active-filters:empty {
+      display: none;
+    }
+    .resource-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 9999px;
+      border: 1px solid #5cc5c1;
+      background: #eefaf9;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #5cc5c1;
+    }
+    .resource-chip__close {
+      font-size: 11px;
+      line-height: 1;
+    }
+    .resource-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .resource-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+    .resource-tag--subject {
+      background: #5cc5c1;
+      color: #fff;
+    }
+    .resource-tag--tutor {
+      border: 1px solid #5cc5c1;
+      color: #5cc5c1;
+      background: #fff;
+    }
+    .resource-card-link {
+      transition: background 0.15s ease;
+    }
+    .resource-card-link:active {
+      background: #fafafa;
+    }
+    .resource-grid-card {
+      min-height: 180px;
+    }
+    .resource-empty {
+      border-radius: 20px;
+      border: 1px dashed #e1e0d7;
+      padding: 24px 16px;
+      text-align: center;
+      font-size: 14px;
+      color: #818181;
+    }
+    .resource-filter-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.35);
+    }
+    .resource-filter-backdrop[hidden] {
+      display: none !important;
+    }
+    .resource-filter-sheet {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 210;
+      width: min(100%, 430px);
+      max-height: min(85vh, 680px);
+      transform: translateX(-50%);
+      border-radius: 20px 20px 0 0;
+      background: #fff;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+    }
+    .resource-filter-sheet[hidden] {
+      display: none !important;
+    }
+    body.resource-filter-open {
+      overflow: hidden;
+    }
+    .resource-filter-sheet__handle {
+      width: 40px;
+      height: 4px;
+      margin: 10px auto 0;
+      border-radius: 9999px;
+      background: #e1e0d7;
+    }
+    .resource-filter-sheet__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 8px;
+    }
+    .resource-filter-clear {
+      font-size: 14px;
+      font-weight: 500;
+      color: #5cc5c1;
+      background: none;
+      border: none;
+      padding: 4px 0;
+    }
+    .resource-filter-sheet__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .resource-filter-group + .resource-filter-group {
+      margin-top: 18px;
+    }
+    .resource-filter-group__title {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #282828;
+    }
+    .resource-filter-group__options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .resource-filter-option {
+      border-radius: 9999px;
+      border: 1.5px solid #5cc5c1;
+      background: #fff;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #5cc5c1;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .resource-filter-option--active {
+      background: #5cc5c1;
+      color: #fff;
+    }
+    .resource-filter-sheet__footer {
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid #e1e0d7;
+    }
+    .resource-filter-apply {
+      width: 100%;
+      border-radius: 9999px;
+      border: none;
+      background: #5cc5c1;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .resource-view-more-wrap {
+      border-top: 1px solid #e1e0d7;
+    }
+    .resource-view-more-wrap[hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="bg-white text-black antialiased ink-bg-top ink-bg-bottom">
+  <div class="ink-graphic-deco" aria-hidden="true"></div>
+
+  <div class="page-shell relative z-10">
+    <main class="px-4 pb-10 pt-5 sm:px-5">
+      <!-- Header: 應屆考生專區 -->
+      <header class="mb-5 flex items-center justify-center gap-2.5">
+        <img src="images/yymobile-logo.svg" alt="YY Mobile" class="h-[33px] w-[38px] shrink-0 object-contain">
+        <h1 class="text-[24px] font-bold tracking-[0.1em] text-brand-green">應屆考生專區</h1>
+      </header>
+
+      <!-- Hero KV Banner -->
+      <section class="mb-5 overflow-hidden rounded-[20px]">
+        <img
+          src="images/kv-banner.png"
+          alt="你來過，我記得，便是緣份！"
+          class="h-[200px] w-full rounded-[20px] object-cover object-center"
+        >
+      </section>
+
+      <!-- 每日金句 -->
+      <section class="quote-card" aria-label="每日金句">
+        <div class="quote-card__bg" aria-hidden="true"></div>
+
+        <div class="quote-card__header">
+          <img src="images/quote-mark.svg" alt="" class="quote-card__mark" aria-hidden="true">
+
+          <div class="quote-card__title-row">
+            <p class="quote-card__title-text">
+              <span class="text-[18px]">每</span><span class="text-[22px]">日</span>
+            </p>
+
+            <div class="quote-card__logo-cluster" aria-hidden="true">
+              <div class="quote-card__logo-icons">
+                <img src="images/quote-logo-1.png" alt="">
+                <img src="images/quote-logo-2.png" alt="">
+                <img src="images/quote-logo-3.png" alt="">
+              </div>
+              <img src="images/quote-logo-tagline.png" alt="" class="quote-card__logo-tagline">
+            </div>
+
+            <p class="quote-card__title-text">
+              <span class="text-[22px]">金</span><span class="text-[18px]">句</span>
+            </p>
+          </div>
+        </div>
+
+        <button type="button" class="quote-card__share" aria-label="分享">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <path d="M8.59 13.51 15.42 17.49M15.41 6.51 8.59 10.49"/>
+          </svg>
+        </button>
+
+        <blockquote class="quote-card__text">
+          珍惜開始，<br>亦不無端結束。
+        </blockquote>
+
+        <img
+          src="images/quote-signature.png"
+          alt=""
+          class="quote-card__signature"
+          aria-hidden="true"
+        >
+      </section>
+
+      <!-- 每日小測 -->
+      <section class="mb-10">
+        <div class="section-divider mb-3">
+          <span class="section-divider__line"></span>
+          <span class="section-divider__center text-[18px]">
+            <img src="images/icon-quiz-lightning.png" alt="" class="section-divider__icon" aria-hidden="true">
+            <span class="relative z-10"><span class="text-[18px]">每</span><span class="text-[22px]">日</span><span class="text-[18px]"> </span><span class="text-[22px] tracking-[0.25em]">小</span><span class="text-[18px]">測</span></span>
+          </span>
+          <span class="section-divider__line"></span>
+        </div>
+
+        <a href="quiz.html" id="quizStartLink" class="relative block h-[120px] overflow-hidden rounded-[20px] bg-brand-green no-underline">
+          <span class="pointer-events-none absolute inset-x-2.5 top-1/2 h-[109px] -translate-y-1/2 rounded-[16px] border-2 border-brand-yellow"></span>
+
+          <img
+            src="images/quiz-papers.png"
+            alt=""
+            class="pointer-events-none absolute left-0 top-1 h-[80px] w-[85px] rotate-[30deg] object-contain opacity-90"
+            aria-hidden="true"
+          >
+
+          <div class="relative z-10 flex h-full flex-col items-center justify-center gap-1 px-20 py-3.5">
+            <p class="flex items-center gap-0.5 text-[16px] font-black tracking-[0.1em] text-white">
+              向5星星進發
+              <span class="text-[14px]">★</span>
+              <span class="text-[14px]">★</span>
+              進發
+            </p>
+            <span class="rounded-full bg-brand-yellow px-8 py-2.5 text-[24px] font-bold tracking-[0.06em] text-black">
+              立即開始
+            </span>
+          </div>
+
+          <img
+            src="images/quiz-person.png"
+            alt=""
+            class="pointer-events-none absolute -right-1 -top-2 h-[128px] w-[100px] object-cover object-top"
+            aria-hidden="true"
+          >
+        </a>
+      </section>
+
+      <!-- 新知足跡 -->
+      <section id="resource-library" class="mb-10">
+        <div class="section-divider mb-5">
+          <span class="section-divider__line"></span>
+          <span class="section-divider__center text-[18px]">
+            <img src="images/icon-footprints.png" alt="" class="section-divider__icon h-[43px] w-[43px]" aria-hidden="true">
+            <span class="relative z-10"><span class="text-[18px]">新</span><span class="text-[22px]">知</span><span class="text-[18px]"> </span><span class="text-[22px] tracking-[0.25em]">足</span><span class="text-[18px]">跡</span></span>
+          </span>
+          <span class="section-divider__line"></span>
+        </div>
+
+        <div class="mb-2.5 flex gap-2.5">
+          <button type="button" class="rounded-full bg-brand-green px-4 py-2 text-[18px] font-bold text-white">凝皓DSE學習資源庫</button>
+          <button type="button" class="flex-1 rounded-full border-2 border-brand-green px-3 py-2 text-[18px] font-medium text-brand-green">YY摘記 / 藝文摘記</button>
+        </div>
+
+        <div class="resource-controls" aria-label="資源庫控制列">
+          <button type="button" id="resource-filter-btn" class="resource-control-btn" aria-label="篩選資源" aria-pressed="false"></button>
+          <button type="button" id="resource-view-toggle" class="resource-control-btn" aria-label="切換至網格檢視" aria-pressed="false"></button>
+        </div>
+
+        <div id="resource-active-filters"></div>
+
+        <div id="resource-empty" class="resource-empty mb-2.5" hidden>沒有符合篩選條件的資源</div>
+
+        <div id="resource-list" class="resource-list overflow-hidden rounded-[20px] bg-white" aria-live="polite"></div>
+
+        <div id="resource-view-more-wrap" class="resource-view-more-wrap overflow-hidden rounded-b-[20px] bg-white">
+          <button type="button" id="resource-view-more" class="flex w-full items-center justify-end rounded-[20px] border-2 border-brand-green px-4 py-2.5 text-[16px] font-medium text-brand-green">
+            瀏覽更多
+          </button>
+        </div>
+      </section>
+
+      <!-- 優惠禮券 -->
+      <section>
+        <div class="section-divider mb-3">
+          <span class="section-divider__line"></span>
+          <span class="section-divider__center text-[18px]">
+            <img src="images/icon-coupon-rocket.png" alt="" class="section-divider__icon h-[42px] w-[42px]" aria-hidden="true">
+            <span class="relative z-10"><span class="text-[18px]">優</span><span class="text-[22px]">惠</span><span class="text-[18px]"> </span><span class="text-[22px] tracking-[0.25em]">禮</span><span class="text-[18px]">券</span></span>
+          </span>
+          <span class="section-divider__line"></span>
+        </div>
+
+        <div class="relative h-[120px] overflow-hidden rounded-[20px] bg-brand-grey px-5 py-3.5">
+          <img src="images/coupon-banner-bg.png" alt="" class="pointer-events-none absolute inset-0 h-full w-full object-cover mix-blend-multiply opacity-60" aria-hidden="true">
+
+          <div class="relative z-10 flex h-full flex-col items-center justify-center gap-1">
+            <p class="text-[16px] font-black tracking-[0.1em] text-black">凝皓教育課程資助卷</p>
+            <button type="button" class="rounded-full bg-brand-yellow px-8 py-2.5 text-[24px] font-bold tracking-[0.05em] text-black">
+              即刻拎優惠
+            </button>
+          </div>
+
+          <div class="pointer-events-none absolute left-0 top-4 rotate-[18deg] rounded bg-brand-teal px-2 py-1 text-center text-[10px] font-bold leading-tight text-white shadow-sm" aria-hidden="true">
+            <p class="text-[14px]">常規課程</p>
+            <p class="text-[14px]">免費體驗券</p>
+            <p class="mt-1 text-[9px]">【只限指定新課程*】</p>
+          </div>
+
+          <div class="pointer-events-none absolute right-3 top-3 flex flex-col gap-1" aria-hidden="true">
+            <div class="rounded bg-white px-3 py-1 text-center shadow-sm">
+              <p class="text-[20px] font-bold leading-none">$500</p>
+              <p class="text-[7px] font-bold tracking-[0.28em]">課程資助券</p>
+            </div>
+            <div class="rounded bg-white px-3 py-1 text-center shadow-sm">
+              <p class="text-[20px] font-bold leading-none">$500</p>
+              <p class="text-[7px] font-bold tracking-[0.28em]">課程資助券</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="resources-data.js"></script>
+  <script src="resources-ui.js"></script>
+  <script>
+    document.getElementById('quizStartLink')?.addEventListener('click', () => {
+      sessionStorage.setItem('yy-quiz-from-home', '1');
+      const primer = new Audio('sounds/bgm.mp3');
+      primer.volume = 0.01;
+      primer.play().catch(() => {});
+    });
+  </script>
+</body>
+</html>

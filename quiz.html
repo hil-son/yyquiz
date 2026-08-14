@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>YY Mobile 每日小測</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              yellow: '#f9ed32',
+              green: '#5cc5c1',
+              teal: '#12c1c3',
+              border: '#e1e0d7',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans TC"', '"Noto Sans HK"', 'sans-serif'],
+          },
+          boxShadow: {
+            option: '0 0 10px rgba(154, 229, 227, 0.8)',
+            card: '0 0 2px rgba(0, 0, 0, 0.25)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --app-max-width: 100%;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (min-width: 431px) { :root { --app-max-width: 430px; } }
+    html, body {
+      height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      font-family: 'Noto Sans TC', 'Noto Sans HK', sans-serif;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100svh;
+      height: 100dvh;
+    }
+    .page-shell {
+      flex: 1 1 0;
+      min-height: 0;
+      width: 100%;
+      max-width: var(--app-max-width);
+      margin-inline: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .app-scroll {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+    .sticky-cta-bar {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: var(--app-max-width);
+      margin-inline: auto;
+      z-index: 100;
+      padding: 12px 20px calc(12px + var(--safe-bottom));
+      background: #fff;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    }
+    .sticky-cta-bar[hidden] { display: none !important; }
+    .sticky-cta-bar__inner {
+      width: 100%;
+    }
+    .ink-bg-top::before,
+    .ink-bg-bottom::after {
+      content: '';
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+      mix-blend-mode: multiply;
+    }
+    .ink-bg-top::before {
+      top: 24px;
+      right: max(-40px, -10vw);
+      width: min(75vw, 280px);
+      height: min(48vw, 180px);
+      background: url('images/watercolor.png') no-repeat center / contain;
+    }
+    .ink-bg-bottom::after {
+      bottom: calc(100px + var(--safe-bottom));
+      left: max(-60px, -15vw);
+      width: min(85vw, 320px);
+      height: min(50vw, 190px);
+      background: url('images/ink-graphic.png') no-repeat center / contain;
+    }
+    .option-btn:not(:disabled):hover { border-color: #12c1c3; }
+    .option-btn:disabled { cursor: default; opacity: 1; }
+    .view[hidden] { display: none !important; }
+    .question-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+    .question-card__prompt ol {
+      list-style-position: outside;
+      padding-left: 27px;
+      margin-left: 0;
+    }
+    .question-card--correct {
+      animation: card-correct-glow 0.65s ease-out;
+    }
+    .question-card--wrong {
+      animation: card-wrong-shake 0.55s ease-out;
+    }
+    .feedback-box--correct {
+      animation: feedback-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .feedback-box--wrong {
+      animation: feedback-shake-in 0.5s ease-out;
+    }
+    .option-btn--reveal-correct {
+      animation: option-correct-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .option-btn--reveal-wrong {
+      animation: option-wrong-shake 0.45s ease-out;
+    }
+    .progress-step--pop {
+      animation: progress-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .answer-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .answer-flash--correct {
+      background: radial-gradient(circle at 50% 40%, rgba(92, 197, 193, 0.28), transparent 65%);
+      animation: flash-fade 0.7s ease-out;
+    }
+    .answer-flash--wrong {
+      background: radial-gradient(circle at 50% 40%, rgba(239, 68, 68, 0.18), transparent 65%);
+      animation: flash-fade 0.55s ease-out;
+    }
+    .confetti-piece {
+      position: fixed;
+      z-index: 60;
+      pointer-events: none;
+      border-radius: 4px;
+      animation: confetti-fall var(--fall-duration, 3000ms) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .flip-icon-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      animation: flip-overlay-fade 1.1s ease-out forwards;
+    }
+    .flip-icon-scene {
+      perspective: 800px;
+    }
+    .flip-icon-check {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #5cc5c1, #12c1c3);
+      color: #fff;
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: 0 8px 28px rgba(92, 197, 193, 0.35);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      animation: flip-icon-spin 0.85s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    }
+    @keyframes card-correct-glow {
+      0% { box-shadow: 0 0 0 rgba(92, 197, 193, 0); }
+      35% { box-shadow: 0 0 0 4px rgba(92, 197, 193, 0.35), 0 0 24px rgba(92, 197, 193, 0.25); }
+      100% { box-shadow: 0 0 2px rgba(0, 0, 0, 0.25); }
+    }
+    @keyframes card-wrong-shake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-6px); }
+      30% { transform: translateX(6px); }
+      45% { transform: translateX(-4px); }
+      60% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+    }
+    @keyframes feedback-pop-in {
+      0% { opacity: 0; transform: scale(0.88) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes feedback-shake-in {
+      0% { opacity: 0; transform: translateX(0); }
+      12% { opacity: 1; transform: translateX(-8px); }
+      28% { transform: translateX(8px); }
+      44% { transform: translateX(-5px); }
+      60% { transform: translateX(5px); }
+      76% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes option-correct-pop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    @keyframes option-wrong-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+    @keyframes progress-pop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.18); }
+      100% { transform: scale(1); }
+    }
+    @keyframes flash-fade {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx, 0), var(--ty, 240px)) rotate(var(--rot, 180deg)) scale(0.6);
+      }
+    }
+    @keyframes flip-icon-spin {
+      0% { transform: rotateY(-180deg) scale(0.4); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+    }
+    @keyframes flip-overlay-fade {
+      0%, 72% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .audio-start-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(4px);
+    }
+    .audio-start-overlay[hidden] {
+      display: none !important;
+    }
+    .audio-start-overlay__btn {
+      border: none;
+      border-radius: 9999px;
+      background: #f9ed32;
+      padding: 14px 32px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #000;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+  </style>
+</head>
+<body class="bg-white text-black antialiased ink-bg-top ink-bg-bottom">
+  <div id="audioStartOverlay" class="audio-start-overlay" hidden>
+    <button type="button" id="audioStartBtn" class="audio-start-overlay__btn">開始測驗</button>
+  </div>
+
+  <div class="page-shell relative z-10">
+    <div class="app-scroll">
+      <div class="pb-6">
+    <!-- Quiz View -->
+    <section id="quizView" class="view flex flex-col">
+      <p id="weekLabel" class="pt-5 text-center text-[18px] font-bold text-brand-teal">第 1 週</p>
+      <div id="progressBar" class="flex items-center justify-center gap-[16px] px-5 py-5"></div>
+
+      <div class="mx-5 pb-4">
+        <div class="question-card py-5" id="questionCard">
+          <div class="question-card__prompt px-5">
+            <ol id="questionList" start="1" class="list-decimal text-[18px] font-bold leading-[26px] break-words">
+              <li id="questionText"></li>
+            </ol>
+          </div>
+          <div id="optionsContainer" class="flex w-full flex-col gap-4 p-5"></div>
+        </div>
+
+        <div id="feedbackBox" class="mt-4 hidden rounded-[16px] px-4 py-3 text-sm leading-relaxed"></div>
+      </div>
+    </section>
+
+    <!-- Results View -->
+    <section id="resultsView" class="view flex flex-col px-5 pt-6" hidden>
+      <div id="resultsDashboard" class="mb-6 flex items-center gap-6 rounded-[24px] bg-brand-green px-6 py-4">
+        <div class="flex shrink-0 flex-col items-center">
+          <p id="scorePercent" class="text-[52px] font-black leading-none tracking-wide text-white">0%</p>
+          <p class="pt-1 text-[14pt] font-normal tracking-[0.2em] text-white">分數</p>
+        </div>
+
+        <div class="min-w-0 flex-1 rounded-[16px] bg-white p-2.5">
+          <p class="text-[16pt] font-bold text-black">每日小測結果</p>
+          <p id="resultsWeekLabel" class="mt-0.5 text-[14pt] text-gray-500">第 1 週</p>
+
+          <div class="flex items-center gap-2 pt-2.5">
+            <span class="h-2 w-2 shrink-0 rounded-[4px] bg-green-500" aria-hidden="true"></span>
+            <div class="h-1 min-w-0 flex-1 overflow-hidden rounded bg-gray-800">
+              <div id="correctBar" class="h-full rounded bg-green-500" style="width: 0%"></div>
+            </div>
+            <span id="correctCountEl" class="w-4 shrink-0 text-right text-[12pt] font-bold text-black">0</span>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1.5">
+            <span class="h-2 w-2 shrink-0 rounded-[4px] bg-red-500" aria-hidden="true"></span>
+            <div class="h-1 min-w-0 flex-1 overflow-hidden rounded bg-gray-800">
+              <div id="incorrectBar" class="h-full rounded bg-red-500" style="width: 0%"></div>
+            </div>
+            <span id="incorrectCountEl" class="w-4 shrink-0 text-right text-[12pt] font-bold text-black">0</span>
+          </div>
+
+          <p id="resultsTotalLabel" class="pt-2 text-[14pt] text-gray-500">共 5 題</p>
+        </div>
+      </div>
+
+      <div class="mb-6 rounded-[20px] bg-white/80 p-4 shadow-option">
+        <p class="mb-3 text-sm font-bold">答題摘要</p>
+        <div id="summaryList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- Review View -->
+    <section id="reviewView" class="view flex flex-col" hidden>
+      <div class="border-b border-brand-border px-5 py-4">
+        <button id="backToResultsBtn" type="button" class="text-sm font-bold text-brand-teal">← 返回結果</button>
+        <p id="reviewProgressText" class="mt-2 text-center text-sm font-bold text-brand-teal"></p>
+      </div>
+
+      <div class="mx-5 pt-4">
+        <div class="question-card py-5">
+          <div class="question-card__prompt px-5">
+            <ol id="reviewQuestionList" start="1" class="list-decimal text-[18px] font-bold leading-[26px] break-words">
+              <li id="reviewQuestionText"></li>
+            </ol>
+          </div>
+          <div id="reviewOptionsContainer" class="flex w-full flex-col gap-4 p-5"></div>
+        </div>
+
+        <div id="reviewFeedbackBox" class="mt-4 rounded-[16px] px-4 py-3 text-sm leading-relaxed"></div>
+      </div>
+    </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="quizCtaBar" class="sticky-cta-bar">
+    <div class="sticky-cta-bar__inner flex gap-3">
+      <button
+        id="prevBtn"
+        type="button"
+        class="hidden flex-1 rounded-full border-2 border-brand-teal bg-white py-3 text-base font-bold text-brand-teal transition hover:bg-brand-teal/5"
+      >
+        上一題
+      </button>
+      <button
+        id="nextBtn"
+        type="button"
+        disabled
+        class="flex-[2] rounded-full border-b-2 border-l-2 border-brand-green bg-brand-yellow py-3.5 text-xl font-bold text-black transition enabled:hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        下一題
+      </button>
+    </div>
+  </div>
+
+  <div id="resultsCtaBar" class="sticky-cta-bar" hidden>
+    <div class="sticky-cta-bar__inner flex flex-col gap-3">
+      <button
+        id="restartBtn"
+        type="button"
+        class="w-full rounded-full border-b-2 border-l-2 border-brand-green bg-brand-yellow py-3.5 text-xl font-bold text-black transition hover:brightness-95"
+      >
+        重新測驗
+      </button>
+      <a
+        href="index.html"
+        class="flex w-full items-center justify-center rounded-full border-2 border-brand-teal bg-white py-3 text-base font-bold text-brand-teal transition hover:bg-brand-teal/5"
+      >
+        返回首頁
+      </a>
+    </div>
+  </div>
+
+  <script src="questions.js"></script>
+  <script>
+    const QUIZ_SIZE = QUIZ_CONFIG.questionsPerWeek;
+
+    const state = {
+      currentWeek: 1,
+      sessionQuestions: [],
+      currentIndex: 0,
+      answers: {},
+      confirmed: {},
+      mode: 'quiz',
+    };
+
+    const quizView = document.getElementById('quizView');
+    const resultsView = document.getElementById('resultsView');
+    const reviewView = document.getElementById('reviewView');
+    const progressBar = document.getElementById('progressBar');
+    const weekLabel = document.getElementById('weekLabel');
+    const questionText = document.getElementById('questionText');
+    const questionList = document.getElementById('questionList');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackBox = document.getElementById('feedbackBox');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const scorePercent = document.getElementById('scorePercent');
+    const resultsWeekLabel = document.getElementById('resultsWeekLabel');
+    const correctBar = document.getElementById('correctBar');
+    const incorrectBar = document.getElementById('incorrectBar');
+    const correctCountEl = document.getElementById('correctCountEl');
+    const incorrectCountEl = document.getElementById('incorrectCountEl');
+    const resultsTotalLabel = document.getElementById('resultsTotalLabel');
+    const summaryList = document.getElementById('summaryList');
+    const restartBtn = document.getElementById('restartBtn');
+    const backToResultsBtn = document.getElementById('backToResultsBtn');
+    const reviewProgressText = document.getElementById('reviewProgressText');
+    const reviewQuestionText = document.getElementById('reviewQuestionText');
+    const reviewQuestionList = document.getElementById('reviewQuestionList');
+    const reviewOptionsContainer = document.getElementById('reviewOptionsContainer');
+    const reviewFeedbackBox = document.getElementById('reviewFeedbackBox');
+    const quizCtaBar = document.getElementById('quizCtaBar');
+    const resultsCtaBar = document.getElementById('resultsCtaBar');
+    const appScroll = document.querySelector('.app-scroll');
+    const questionCard = document.getElementById('questionCard');
+    const resultsDashboard = document.getElementById('resultsDashboard');
+    const audioStartOverlay = document.getElementById('audioStartOverlay');
+    const audioStartBtn = document.getElementById('audioStartBtn');
+
+    const CONFETTI_COLORS = ['#5cc5c1', '#12c1c3', '#f9ed32', '#86efac', '#ffffff'];
+
+    const sounds = {
+      bgm: new Audio('sounds/bgm.mp3'),
+      congrats: new Audio('sounds/congrats.mp3'),
+      correct: new Audio('sounds/correct.mp3'),
+      wrong: new Audio('sounds/wrong.mp3'),
+    };
+
+    sounds.bgm.loop = true;
+    sounds.bgm.preload = 'auto';
+    sounds.congrats.preload = 'auto';
+    sounds.correct.preload = 'auto';
+    sounds.wrong.preload = 'auto';
+    sounds.bgm.volume = 0.45;
+    sounds.congrats.volume = 0.9;
+    sounds.correct.volume = 0.9;
+    sounds.wrong.volume = 0.9;
+
+    let audioUnlocked = false;
+    let bgmStarted = false;
+    let bgmReadyPromise = null;
+
+    function waitForBgmReady() {
+      if (!bgmReadyPromise) {
+        bgmReadyPromise = new Promise((resolve) => {
+          const bgm = sounds.bgm;
+          if (bgm.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+            resolve();
+            return;
+          }
+          const done = () => resolve();
+          bgm.addEventListener('canplaythrough', done, { once: true });
+          bgm.addEventListener('error', done, { once: true });
+          bgm.load();
+        });
+      }
+      return bgmReadyPromise;
+    }
+
+    function hideAudioStartOverlay() {
+      if (audioStartOverlay) audioStartOverlay.hidden = true;
+    }
+
+    function maybeShowAudioStartOverlay() {
+      if (state.mode !== 'quiz') {
+        hideAudioStartOverlay();
+        return;
+      }
+      const bgm = sounds.bgm;
+      if (bgmStarted && !bgm.paused && !bgm.muted) {
+        hideAudioStartOverlay();
+        return;
+      }
+      if (audioStartOverlay) audioStartOverlay.hidden = false;
+    }
+
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+      sounds.bgm.muted = false;
+    }
+
+    async function enableAudioPlayback() {
+      unlockAudio();
+      sounds.bgm.muted = false;
+      if (bgmStarted && !sounds.bgm.paused) {
+        hideAudioStartOverlay();
+        return;
+      }
+      await startBgm();
+      hideAudioStartOverlay();
+    }
+
+    function playSound(name) {
+      unlockAudio();
+      const audio = sounds[name];
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+
+    async function startBgm({ restart = false } = {}) {
+      if (state.mode !== 'quiz') return;
+
+      await waitForBgmReady();
+
+      const bgm = sounds.bgm;
+      if (restart) {
+        bgm.currentTime = 0;
+        bgmStarted = false;
+      }
+
+      if (bgmStarted && !bgm.paused) return;
+
+      try {
+        bgm.muted = false;
+        await bgm.play();
+        bgmStarted = true;
+        hideAudioStartOverlay();
+        return;
+      } catch (_) {
+        /* fall through to muted autoplay */
+      }
+
+      try {
+        bgm.muted = true;
+        await bgm.play();
+        bgmStarted = true;
+        maybeShowAudioStartOverlay();
+      } catch (_) {
+        bgmStarted = false;
+        maybeShowAudioStartOverlay();
+      }
+    }
+
+    function stopBgm() {
+      sounds.bgm.pause();
+      sounds.bgm.currentTime = 0;
+      sounds.bgm.muted = false;
+      bgmStarted = false;
+      hideAudioStartOverlay();
+    }
+
+    function playAnswerSound(isCorrect) {
+      unlockAudio();
+      if (bgmStarted && sounds.bgm.muted) {
+        sounds.bgm.muted = false;
+      }
+      playSound(isCorrect ? 'correct' : 'wrong');
+    }
+
+    function bindAudioUnlock() {
+      const unlock = () => {
+        enableAudioPlayback();
+      };
+
+      audioStartBtn?.addEventListener('click', unlock);
+      audioStartOverlay?.addEventListener('click', (event) => {
+        if (event.target === audioStartOverlay) unlock();
+      });
+
+      ['pointerdown', 'keydown', 'touchstart'].forEach((eventName) => {
+        document.addEventListener(eventName, () => {
+          if (state.mode !== 'quiz') return;
+          if (sounds.bgm.muted || !bgmStarted || sounds.bgm.paused) {
+            enableAudioPlayback();
+          }
+        }, { passive: true });
+      });
+    }
+
+    bindAudioUnlock();
+    Object.values(sounds).forEach((audio) => audio.load());
+
+    function triggerHaptic(isCorrect) {
+      if (navigator.vibrate) {
+        navigator.vibrate(isCorrect ? [12, 40, 18] : [28, 36, 28]);
+      }
+    }
+
+    function spawnConfetti(originElement) {
+      const source = originElement || resultsDashboard || questionCard;
+      const rect = source.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+      const count = 44;
+      const scale = 2;
+      const durationMs = 3000;
+
+      for (let i = 0; i < count; i += 1) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        const size = (5 + Math.random() * 5) * scale;
+        const angle = (Math.random() * Math.PI * 2);
+        const distance = (40 + Math.random() * 90) * scale;
+        piece.style.left = `${originX}px`;
+        piece.style.top = `${originY}px`;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${Math.random() > 0.5 ? size : size * 0.45}px`;
+        piece.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+        piece.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+        piece.style.setProperty('--ty', `${(Math.sin(angle) * distance + 60 + Math.random() * 40) * scale}px`);
+        piece.style.setProperty('--rot', `${Math.random() * 540 - 180}deg`);
+        piece.style.setProperty('--fall-duration', `${durationMs}ms`);
+        document.body.appendChild(piece);
+        piece.addEventListener('animationend', () => piece.remove(), { once: true });
+      }
+    }
+
+    function showFlipIcon() {
+      const overlay = document.createElement('div');
+      overlay.className = 'flip-icon-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.innerHTML = `
+        <div class="flip-icon-scene">
+          <div class="flip-icon-check">✓</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+    }
+
+    function showAnswerFlash(isCorrect) {
+      const flash = document.createElement('div');
+      flash.className = `answer-flash ${isCorrect ? 'answer-flash--correct' : 'answer-flash--wrong'}`;
+      flash.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(flash);
+      flash.addEventListener('animationend', () => flash.remove(), { once: true });
+    }
+
+    function clearAnswerEffectClasses() {
+      questionCard.classList.remove('question-card--correct', 'question-card--wrong');
+      feedbackBox.classList.remove('feedback-box--correct', 'feedback-box--wrong');
+    }
+
+    function playAnswerEffect(isCorrect) {
+      clearAnswerEffectClasses();
+      void questionCard.offsetWidth;
+
+      questionCard.classList.add(isCorrect ? 'question-card--correct' : 'question-card--wrong');
+      feedbackBox.classList.add(isCorrect ? 'feedback-box--correct' : 'feedback-box--wrong');
+
+      showAnswerFlash(isCorrect);
+      if (isCorrect) showFlipIcon();
+      playAnswerSound(isCorrect);
+      triggerHaptic(isCorrect);
+
+      const activeStep = progressBar.children[state.currentIndex];
+      if (activeStep) {
+        activeStep.classList.remove('progress-step--pop');
+        void activeStep.offsetWidth;
+        activeStep.classList.add('progress-step--pop');
+      }
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function parseLocalDate(dateString) {
+      const [year, month, day] = dateString.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function getCurrentWeekNumber() {
+      const weekOverride = new URLSearchParams(window.location.search).get('week');
+      if (weekOverride) {
+        const week = Number.parseInt(weekOverride, 10);
+        if (week >= 1 && week <= QUIZ_CONFIG.totalWeeks) return week;
+      }
+
+      const startDate = parseLocalDate(QUIZ_CONFIG.campaignStartDate);
+      const today = new Date();
+      const startMidnight = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const diffDays = Math.floor((todayMidnight - startMidnight) / (1000 * 60 * 60 * 24));
+      const week = Math.floor(diffDays / 7) + 1;
+
+      if (week < 1) return 1;
+      if (week > QUIZ_CONFIG.totalWeeks) return QUIZ_CONFIG.totalWeeks;
+      return week;
+    }
+
+    function getWeekQuestionIds(weekNumber) {
+      const startId = (weekNumber - 1) * QUIZ_CONFIG.questionsPerWeek + 1;
+      return Array.from({ length: QUIZ_CONFIG.questionsPerWeek }, (_, index) => startId + index);
+    }
+
+    function getWeekQuestions(weekNumber) {
+      const ids = getWeekQuestionIds(weekNumber);
+      return ids
+        .map((id) => QUESTION_BANK.find((question) => question.id === id))
+        .filter(Boolean);
+    }
+
+    function pickSessionQuestions() {
+      const week = getCurrentWeekNumber();
+      const questions = shuffle(getWeekQuestions(week));
+      return { week, questions };
+    }
+
+    function getCurrentQuestion() {
+      return state.sessionQuestions[state.currentIndex];
+    }
+
+    function isAnswered(index = state.currentIndex) {
+      return Object.prototype.hasOwnProperty.call(state.answers, index);
+    }
+
+    function isConfirmed(index = state.currentIndex) {
+      return state.confirmed[index] === true;
+    }
+
+    function getSelectedLabel(index = state.currentIndex) {
+      return state.answers[index] ?? null;
+    }
+
+    function isCorrect(question, label) {
+      return label === question.correct;
+    }
+
+    function countCorrectAnswers() {
+      return state.sessionQuestions.reduce((total, question, index) => {
+        return total + (isCorrect(question, state.answers[index]) ? 1 : 0);
+      }, 0);
+    }
+
+    function showView(viewName) {
+      state.mode = viewName;
+      quizView.hidden = viewName !== 'quiz';
+      resultsView.hidden = viewName !== 'results';
+      reviewView.hidden = viewName !== 'review';
+      quizCtaBar.hidden = viewName !== 'quiz';
+      resultsCtaBar.hidden = viewName !== 'results';
+
+      if (viewName === 'quiz') {
+        startBgm();
+      } else {
+        stopBgm();
+      }
+
+      if (viewName === 'results' && appScroll) {
+        window.requestAnimationFrame(() => {
+          appScroll.scrollTop = 0;
+        });
+      }
+    }
+
+    function renderProgressBar() {
+      progressBar.innerHTML = '';
+      for (let i = 0; i < QUIZ_SIZE; i += 1) {
+        const step = document.createElement('button');
+        step.type = 'button';
+        step.setAttribute('aria-label', `第 ${i + 1} 題`);
+        step.className = [
+          'flex h-[32px] w-[32px] items-center justify-center rounded-full text-[16px] font-bold leading-none transition',
+          i === state.currentIndex
+            ? 'bg-brand-teal text-white'
+            : isConfirmed(i)
+              ? 'border-2 border-brand-teal bg-brand-teal/15 text-brand-teal'
+              : isAnswered(i)
+                ? 'border-2 border-dashed border-brand-teal text-brand-teal'
+                : 'border-2 border-brand-teal text-brand-teal',
+        ].join(' ');
+        step.textContent = String(i + 1);
+        step.addEventListener('click', () => {
+          if (state.mode !== 'quiz') return;
+          if (i <= state.currentIndex || isConfirmed(i)) {
+            state.currentIndex = i;
+            renderQuiz();
+          }
+        });
+        progressBar.appendChild(step);
+      }
+    }
+
+    function optionClasses(question, selectedLabel, optionLabel, interactive, revealed) {
+      const classes = [
+        'option-btn flex w-full items-center justify-center rounded-[20px] bg-white/80 p-3 text-left text-[18px] leading-normal shadow-option transition',
+      ];
+
+      if (!interactive) {
+        if (optionLabel === question.correct) {
+          classes.push('border-2 border-green-500 bg-green-50');
+        } else if (selectedLabel === optionLabel && optionLabel !== question.correct) {
+          classes.push('border-2 border-red-500 bg-red-50');
+        } else {
+          classes.push('border-2 border-transparent opacity-60');
+        }
+        return classes.join(' ');
+      }
+
+      if (!revealed) {
+        if (selectedLabel === optionLabel) {
+          classes.push('border-2 border-brand-teal bg-brand-teal/10');
+        } else {
+          classes.push('border-2 border-transparent cursor-pointer hover:border-brand-teal/60');
+        }
+        return classes.join(' ');
+      }
+
+      return classes.join(' ');
+    }
+
+    function buildOptionButton(question, option, selectedLabel, interactive, revealed, onSelect) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = optionClasses(question, selectedLabel, option.label, interactive, revealed);
+
+      if (revealed) {
+        if (option.label === question.correct) {
+          button.classList.add('option-btn--reveal-correct');
+        } else if (selectedLabel === option.label) {
+          button.classList.add('option-btn--reveal-wrong');
+        }
+      }
+
+      button.disabled = !interactive;
+      button.innerHTML = `<span class="w-full break-words"><span class="font-bold">${option.label}. </span><span class="font-normal">${option.text}</span></span>`;
+      if (interactive) {
+        button.addEventListener('click', () => onSelect(option.label));
+      }
+      return button;
+    }
+
+    function scrollFeedbackIntoView() {
+      if (!appScroll || feedbackBox.hidden) return;
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          const scrollRect = appScroll.getBoundingClientRect();
+          const feedbackRect = feedbackBox.getBoundingClientRect();
+          const bottomGap = 16;
+
+          if (feedbackRect.top < scrollRect.top) {
+            appScroll.scrollBy({
+              top: feedbackRect.top - scrollRect.top - 8,
+              behavior: 'smooth',
+            });
+            return;
+          }
+
+          const targetBottom = scrollRect.bottom - bottomGap;
+          if (feedbackRect.bottom > targetBottom) {
+            appScroll.scrollBy({
+              top: feedbackRect.bottom - targetBottom,
+              behavior: 'smooth',
+            });
+          }
+        });
+      });
+    }
+
+    function renderFeedback(question, selectedLabel, target) {
+      target.classList.remove(
+        'hidden',
+        'border-green-500', 'bg-green-50', 'text-green-800',
+        'border-red-500', 'bg-red-50', 'text-red-800',
+        'border'
+      );
+      target.classList.add('border');
+
+      const correct = isCorrect(question, selectedLabel);
+
+      if (correct) {
+        target.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+        target.innerHTML = `
+          <p class="mb-1 flex items-center gap-2 text-base font-bold">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white">✓</span>
+            正確
+          </p>
+          ${question.explanation ? `<p>${question.explanation}</p>` : '<p>答得好！</p>'}
+        `;
+      } else {
+        target.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
+        const correctOption = question.options.find((item) => item.label === question.correct);
+        target.innerHTML = `
+          <p class="mb-1 flex items-center gap-2 text-base font-bold">
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white">✕</span>
+            錯誤
+          </p>
+          <p>正確答案：<span class="font-bold">${question.correct}. ${correctOption.text}</span></p>
+          ${question.explanation ? `<p class="mt-2">${question.explanation}</p>` : ''}
+        `;
+      }
+    }
+
+    function renderQuiz() {
+      const question = getCurrentQuestion();
+      const selectedLabel = getSelectedLabel();
+      const confirmed = isConfirmed();
+
+      renderProgressBar();
+      weekLabel.textContent = `第 ${state.currentWeek} 週`;
+      questionList.start = state.currentIndex + 1;
+      questionText.innerHTML = question.question;
+
+      optionsContainer.innerHTML = '';
+      question.options.forEach((option) => {
+        optionsContainer.appendChild(
+          buildOptionButton(question, option, selectedLabel, !confirmed, confirmed, (label) => {
+            state.answers[state.currentIndex] = label;
+            renderQuiz();
+          })
+        );
+      });
+
+      if (selectedLabel && confirmed) {
+        feedbackBox.classList.remove('hidden');
+        renderFeedback(question, selectedLabel, feedbackBox);
+      } else {
+        feedbackBox.classList.add('hidden');
+        feedbackBox.innerHTML = '';
+        clearAnswerEffectClasses();
+      }
+
+      prevBtn.classList.toggle('hidden', state.currentIndex === 0);
+      nextBtn.disabled = !selectedLabel;
+
+      if (!confirmed) {
+        nextBtn.textContent = '確認';
+      } else if (state.currentIndex === QUIZ_SIZE - 1) {
+        nextBtn.textContent = '查看結果';
+      } else {
+        nextBtn.textContent = '下一題';
+      }
+    }
+
+    let resultsAnimFrame = null;
+
+    function cancelResultsAnimation() {
+      if (resultsAnimFrame !== null) {
+        cancelAnimationFrame(resultsAnimFrame);
+        resultsAnimFrame = null;
+      }
+    }
+
+    function easeOutCubic(t) {
+      return 1 - (1 - t) ** 3;
+    }
+
+    function animateResultsDashboard({ percentage, correctCount, incorrectCount }) {
+      cancelResultsAnimation();
+
+      const correctBarPct = (correctCount / QUIZ_SIZE) * 100;
+      const incorrectBarPct = (incorrectCount / QUIZ_SIZE) * 100;
+      const duration = 900;
+      const barTransition = `width ${duration}ms cubic-bezier(0.33, 1, 0.68, 1)`;
+
+      scorePercent.textContent = '0%';
+      correctCountEl.textContent = '0';
+      incorrectCountEl.textContent = '0';
+      correctBar.style.transition = 'none';
+      incorrectBar.style.transition = 'none';
+      correctBar.style.width = '0%';
+      incorrectBar.style.width = '0%';
+      void correctBar.offsetWidth;
+
+      correctBar.style.transition = barTransition;
+      incorrectBar.style.transition = barTransition;
+
+      const start = performance.now();
+
+      function tick(now) {
+        const eased = easeOutCubic(Math.min((now - start) / duration, 1));
+
+        scorePercent.textContent = `${Math.round(percentage * eased)}%`;
+        correctCountEl.textContent = String(Math.round(correctCount * eased));
+        incorrectCountEl.textContent = String(Math.round(incorrectCount * eased));
+
+        if (eased < 1) {
+          resultsAnimFrame = requestAnimationFrame(tick);
+        } else {
+          scorePercent.textContent = `${percentage}%`;
+          correctCountEl.textContent = String(correctCount);
+          incorrectCountEl.textContent = String(incorrectCount);
+          resultsAnimFrame = null;
+        }
+      }
+
+      requestAnimationFrame(() => {
+        correctBar.style.width = `${correctBarPct}%`;
+        incorrectBar.style.width = `${incorrectBarPct}%`;
+        resultsAnimFrame = requestAnimationFrame(tick);
+      });
+    }
+
+    function renderResults() {
+      const correctCount = countCorrectAnswers();
+      const incorrectCount = QUIZ_SIZE - correctCount;
+      const percentage = Math.round((correctCount / QUIZ_SIZE) * 100);
+
+      resultsWeekLabel.textContent = `第 ${state.currentWeek} 週`;
+      resultsTotalLabel.textContent = `共 ${QUIZ_SIZE} 題`;
+
+      summaryList.innerHTML = '';
+      state.sessionQuestions.forEach((question, index) => {
+        const selected = getSelectedLabel(index);
+        const correct = isCorrect(question, selected);
+        const item = document.createElement('div');
+        item.className = [
+          'flex w-full items-start gap-3 rounded-[16px] border px-3 py-3 text-left',
+          correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50',
+        ].join(' ');
+        item.innerHTML = `
+          <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${correct ? 'bg-green-500' : 'bg-red-500'}">${index + 1}</span>
+          <span class="flex-1 text-sm leading-relaxed">
+            <span class="font-bold ${correct ? 'text-green-700' : 'text-red-700'}">${correct ? '正確' : '錯誤'}</span>
+            <span class="mt-1 block text-black">${question.question}</span>
+          </span>
+        `;
+        summaryList.appendChild(item);
+      });
+
+      showView('results');
+      requestAnimationFrame(() => {
+        animateResultsDashboard({ percentage, correctCount, incorrectCount });
+        if (percentage > 79) {
+          playSound('congrats');
+          window.setTimeout(() => {
+            spawnConfetti(resultsDashboard);
+          }, 900);
+        }
+      });
+    }
+
+    function renderReview() {
+      const question = getCurrentQuestion();
+      const selectedLabel = getSelectedLabel(state.currentIndex);
+
+      reviewProgressText.textContent = `第 ${state.currentIndex + 1} 題 / 共 ${QUIZ_SIZE} 題`;
+      reviewQuestionList.start = state.currentIndex + 1;
+      reviewQuestionText.innerHTML = question.question;
+
+      reviewOptionsContainer.innerHTML = '';
+      question.options.forEach((option) => {
+        reviewOptionsContainer.appendChild(
+          buildOptionButton(question, option, selectedLabel, false, true, null)
+        );
+      });
+
+      renderFeedback(question, selectedLabel, reviewFeedbackBox);
+    }
+
+    function startQuiz() {
+      const session = pickSessionQuestions();
+      state.currentWeek = session.week;
+      state.sessionQuestions = session.questions;
+      state.currentIndex = 0;
+      state.answers = {};
+      state.confirmed = {};
+      showView('quiz');
+      renderQuiz();
+      startBgm({ restart: true }).then(() => {
+        window.setTimeout(maybeShowAudioStartOverlay, 400);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (state.currentIndex > 0) {
+        state.currentIndex -= 1;
+        renderQuiz();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!isAnswered()) return;
+
+      if (!isConfirmed()) {
+        const question = getCurrentQuestion();
+        const selectedLabel = getSelectedLabel();
+        const correct = isCorrect(question, selectedLabel);
+
+        state.confirmed[state.currentIndex] = true;
+        renderQuiz();
+        playAnswerEffect(correct);
+        scrollFeedbackIntoView();
+        return;
+      }
+
+      if (state.currentIndex < QUIZ_SIZE - 1) {
+        state.currentIndex += 1;
+        renderQuiz();
+      } else {
+        renderResults();
+      }
+    });
+
+    restartBtn.addEventListener('click', startQuiz);
+    backToResultsBtn.addEventListener('click', () => showView('results'));
+
+    startQuiz();
+  </script>
+</body>
+</html>
